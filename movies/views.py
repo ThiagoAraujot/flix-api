@@ -22,13 +22,15 @@ class MoviesRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 class MovieStatsView(views.APIView):
     permission_classes = (IsAuthenticated, GlobalDefaultPermission,)
     queryset = Movies.objects.all()
-    
+
     def get(self, request):
         total_movies = self.queryset.count()
-        movies_by_genre = self.queryset.values('genre__name').annotate(count=Count('id'))
+        movies_by_genre = self.queryset.values(
+            'genre__name').annotate(count=Count('id'))
         total_reviews = Reviews.objects.all().count()
-        average_stars = Reviews.objects.aggregate(avg_stars=Avg('stars'))['avg_stars']
-        
+        average_stars = Reviews.objects.aggregate(
+            avg_stars=Avg('stars'))['avg_stars']
+
         return response.Response(
             data={
                 'total_movies': total_movies,
